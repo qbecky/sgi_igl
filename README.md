@@ -2,7 +2,7 @@
 
   <h1 align="center">SGI 2025: Motion Planning for Broken Snake Robots</h1>
 
-  ![Teaser](./images/Teaser.jpg)
+  ![Teaser](./images/robot_siggraph.jpg)
 
   <p align="center">
     <br />
