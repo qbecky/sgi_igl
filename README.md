@@ -1,6 +1,25 @@
-# SGI 2025: Motion Planning for Broken Snake Robots
+<p align="center">
 
-This repository is a lighter version of the code for "Inverse Geometric Locomotion", trimmed for the needs of the summer school project "Motion Planning for Broken Snake Robots".
+  <h1 align="center">SGI 2025: Motion Planning for Broken Snake Robots</h1>
+
+  ![Teaser](./images/Teaser.jpg)
+
+  <p align="center">
+    <br />
+    <a href="https://olligross.github.io/"><strong>Oliver Gross</strong></a>
+    · 
+    <a href="https://qbecky.github.io/"><strong>Quentin Becker</strong></a>
+    <br />
+  </p>
+</p>
+
+## About
+
+This repository is a lighter version of the code for [Inverse Geometric Locomotion](https://go.epfl.ch/igl/), trimmed for the needs of the summer school project "Motion Planning for Broken Snake Robots".
+
+## Code Structure
+
+[TODO]
 
 ## Installation
 
@@ -16,7 +35,7 @@ Or if you already cloned the repository, run
 git submodule update --init --recursive
 ```
 
-Simply create a conda environment and install the dependencies
+Create a conda environment and install the dependencies
 
 ```bash
 conda create --name sgi_igl_env
@@ -29,22 +48,11 @@ pip install libigl
 nbstripout --install
 ```
 
-## Run code
+## Run Code
 
 Simply activate your environment and run 
 
 ```
 jupyter lab
-```
-
-## 3D rendering
-
-We use mayavi to render our 3D meshes. You can run the scripts located in `rendering/` after creating the following python environment
-
-```bash
-conda create --name sgi_igl_rendering_env python=3.9
-conda activate sgi_igl_rendering_env
-conda install -y scipy=1.10 matplotlib numpy=1.26 jupyterlab tqdm opencv absl-py mayavi=4.8.1 vtk=9.2.6 pyqt=5.15.7
-pip install ffmpeg-python
 ```
 
