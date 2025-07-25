@@ -15,7 +15,7 @@
 
 ## About
 
-This repository is a lighter version of the code for [Inverse Geometric Locomotion](https://go.epfl.ch/igl/), trimmed for the needs of the summer school project "Motion Planning for Broken Snake Robots".
+This repository is a lighter version of the code for [Inverse Geometric Locomotion](https://go.epfl.ch/igl/), trimmed for the needs of the summer school project "Motion Planning for Broken Snake Robots" proposed for the [Summer Geometry Initiative 2025](https://summergeometry.org/sgi2025/) (SGI 2025).
 
 ## Code Structure
 
