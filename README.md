@@ -19,7 +19,29 @@ This repository is a lighter version of the code for [Inverse Geometric Locomoti
 
 ## Code Structure
 
-[TODO]
+The repository is structured as follows,
+
+```
+sgi_igl
+├── ext
+│   └── torchcubicspline
+├── images
+├── notebooks
+├── output
+└── python
+    ├── experiments
+    │   ├── *_settings.py
+    │   └── *.py
+    ├── *.py
+    └── *utils.py
+```
+
+In alphabetical order, 
+- `ext/` contains external libraries that are needed for the project, in our case [`torchcubicspline`](https://qbecky.github.io/miscellanea_pages/torchcubicspline.html), a [PyTorch](https://pytorch.org/)-based library that contains utilities to parameterize and optimize snake gaits using a few control points.
+- `images/` contains some illustrations for this README file.
+- `notebooks/` is where you can create notebooks to interactively experiment with the code. Some examples are already given: See `snake_all_joints.ipynb` for an optimization problem and `snake_all_joints_parse.ipynb` to parse and visualize results.
+- `output/` will be populated when you run experiments and is intended to store code output (forward simulation and optimization) as well as graphs, metrics, renders, etc.
+- `python/` contains scripts for running experiments in parallel (in `python/experiments/`), the functions related to forward simulation and sensitivity analysis, and utilitary functions. In `python/experiments/`, we name experiment scripts and settings scripts by pairs: For instance `snake_all_joints.py` and `snake_all_joints_settings.py`. You can create your own experiment by following the same template.
 
 ## Installation
 
@@ -29,7 +51,7 @@ First, clone the repository recursively as follows
 git clone --recurse-submodules -j8 git@github.com:qbecky/sgi_igl.git
 ```
 
-Or if you already cloned the repository, run
+Or if you already cloned the repository without getting the submodules, run
 
 ```bash
 git submodule update --init --recursive
@@ -56,3 +78,8 @@ Simply activate your environment and run
 jupyter lab
 ```
 
+You can test your installation by running `notebooks/hello_world.ipynb` and making sure all the cells run properly. You can also run experiments scripts in `python/experiments/` by executing the following command in a terminal inside the `experiments/` subfolder with the `sgi_igl_env` conda environment activated,
+
+```bash
+python snake_all_joints.py --trial_number=0
+```
