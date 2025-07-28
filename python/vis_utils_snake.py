@@ -16,6 +16,7 @@ def plot_animated_snake(
     show_orientation=False, show_snake_trail=False,
     show_g_trail=False, show_g_start=False,
     arrow_params=None, min_aspect_ratio=0.2,
+    padding_mult_xy=None,
 ):
     '''Plot an animated snake
     
@@ -33,15 +34,19 @@ def plot_animated_snake(
         show_g_start: boolean telling if the initial positioning of the snake should be shown
         arrow_params: dictionary containing parameters for the arrows, e.g. length and width
         min_aspect_ratio: float representing the minimum aspect ratio of the plot
+        padding_mult_xy: (2,) array representing the padding in the x and y directions as a fraction of the range of the x and y axes
     '''
+
+    if padding_mult_xy is None:
+        padding_mult_xy = np.array([0.05, 0.05])
     
     if xy_lim is None:
         xy_lim = np.zeros(shape=(2, 2))
         xy_lim[:, 0] = np.min(pos.reshape(-1, 3)[:, :2], axis=0)
         xy_lim[:, 1] = np.max(pos.reshape(-1, 3)[:, :2], axis=0)
         range_xy = xy_lim[:, 1] - xy_lim[:, 0]
-        xy_lim[:, 0] -= 0.05 * range_xy
-        xy_lim[:, 1] += 0.05 * range_xy
+        xy_lim[:, 0] -= padding_mult_xy * range_xy
+        xy_lim[:, 1] += padding_mult_xy * range_xy
     
     n_steps = pos.shape[0]
     alphas = np.linspace(0.1, 1.0, n_steps) ** exponent
