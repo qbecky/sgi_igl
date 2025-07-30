@@ -12,6 +12,7 @@ from vis_utils import checkerboard_rectangle_aligned
 def plot_animated_snake(
     pos, path_to_save,
     g=None, gt=None, gcp=None,
+    broken_joint_ids=None,
     exponent=1.0, xy_lim=None, 
     show_orientation=False, show_snake_trail=False,
     show_g_trail=False, show_g_start=False,
@@ -26,6 +27,7 @@ def plot_animated_snake(
         g: (n_steps, 7) array representing the rigid transformations
         gt: (7,) array representing the target rigid transformations
         gcp: (n_cp, 7) array representing the checkpoints
+        broken_joint_ids: list of int representing the indices of the broken joints
         exponent: float representing the exponent of the alpha in the plot
         xy_lim: (2, 2) array representing the limits of the x and y axes
         show_orientation: boolean telling if the orientation should be shown as arrows
@@ -39,6 +41,9 @@ def plot_animated_snake(
 
     if padding_mult_xy is None:
         padding_mult_xy = np.array([0.05, 0.05])
+
+    if broken_joint_ids is None:
+        broken_joint_ids = []
     
     if xy_lim is None:
         xy_lim = np.zeros(shape=(2, 2))
@@ -70,6 +75,9 @@ def plot_animated_snake(
     joints_size = 10.0 * linewidth_snake
     g_size = 6.0 * linewidth_snake
 
+    operational_pos_ids = [i for i in np.arange(1, pos.shape[1]-1) if (i-1) not in broken_joint_ids]
+    broken_pos_ids = [i+1 for i in broken_joint_ids]
+
     fig = plt.figure(figsize=(figure_width, figure_height))
     gs = fig.add_gridspec(1, 1)
     ax_tmp = fig.add_subplot(gs[0, 0])
@@ -81,7 +89,8 @@ def plot_animated_snake(
         else:
             ax_tmp.plot(pos[id_step, :, 0], pos[id_step, :, 1], lw=linewidth_snake, c=blue, alpha=alphas[-1], zorder=1)
 
-        ax_tmp.scatter(pos[id_step, 1:-1, 0], pos[id_step, 1:-1, 1], marker='o', s=joints_size, c="k", zorder=1.5)
+        ax_tmp.scatter(pos[id_step, operational_pos_ids, 0], pos[id_step, operational_pos_ids, 1], marker='o', s=joints_size, c="k", zorder=1.5)
+        ax_tmp.scatter(pos[id_step, broken_pos_ids, 0], pos[id_step, broken_pos_ids, 1], marker='o', s=joints_size, c="w", edgecolors="k", linewidths=2.0, zorder=1.5)
         
         if g is not None:
             if show_g_trail:
