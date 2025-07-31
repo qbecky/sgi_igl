@@ -4,6 +4,7 @@ from matplotlib.patches import Arrow
 import matplotlib.pyplot as plt
 import matplotlib.collections as mcoll
 import numpy as np
+from obstacle_implicits import SphereSquareImplicit
 import torch
 import os
 from utils import quaternion_to_matrix_torch
@@ -12,7 +13,7 @@ from vis_utils import checkerboard_rectangle_aligned
 def plot_animated_snake(
     pos, path_to_save,
     g=None, gt=None, gcp=None,
-    broken_joint_ids=None,
+    broken_joint_ids=None, sphere_obstacle_params=None,
     exponent=1.0, xy_lim=None, 
     show_orientation=False, show_snake_trail=False,
     show_g_trail=False, show_g_start=False,
@@ -28,6 +29,7 @@ def plot_animated_snake(
         gt: (7,) array representing the target rigid transformations
         gcp: (n_cp, 7) array representing the checkpoints
         broken_joint_ids: list of int representing the indices of the broken joints
+        sphere_obstacle_params: (4,) tensor representing the parameters of the sphere obstacle, center then radius
         exponent: float representing the exponent of the alpha in the plot
         xy_lim: (2, 2) array representing the limits of the x and y axes
         show_orientation: boolean telling if the orientation should be shown as arrows
@@ -140,6 +142,32 @@ def plot_animated_snake(
 
         ax_tmp.set_xlim(xy_lim[0])
         ax_tmp.set_ylim(xy_lim[1])
+
+        if sphere_obstacle_params is not None:
+            obstacle = SphereSquareImplicit(sphere_obstacle_params)
+            ts_circle = np.linspace(0, 2 * np.pi, 100)
+            circle_x = sphere_obstacle_params[-1] * np.cos(ts_circle) + sphere_obstacle_params[0]
+            circle_y = sphere_obstacle_params[-1] * np.sin(ts_circle) + sphere_obstacle_params[1]
+
+            n_plot = 1000
+            n_levels = 15
+            x_plot = torch.linspace(ax_tmp.get_xlim()[0], ax_tmp.get_xlim()[1], n_plot)
+            y_plot = torch.linspace(ax_tmp.get_ylim()[0], ax_tmp.get_ylim()[1], n_plot)
+            xyz_plot = torch.stack([
+                torch.tile(x_plot, dims=(n_plot,)),
+                torch.repeat_interleave(y_plot, repeats=n_plot, dim=0),
+                torch.zeros(size=(n_plot*n_plot,))
+            ], dim=1)
+
+            sdfs = obstacle.evaluate_implicit_function(xyz_plot).reshape(n_plot, n_plot)
+
+            min_sdf, max_sdf = torch.min(sdfs), torch.max(sdfs)
+            max_abs_sdf = max(torch.abs(min_sdf), torch.abs(max_sdf))
+            levels = np.linspace(-max_abs_sdf, max_abs_sdf, n_levels)
+            ax_tmp.contourf(x_plot, y_plot, sdfs, levels=levels, cmap='coolwarm', zorder=-2)
+
+            ax_tmp.plot(circle_x, circle_y, lw=3.0, c='k', zorder=0)
+
         ax_tmp.set_aspect('equal')
         ax_tmp.axis('off')
 
