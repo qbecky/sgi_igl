@@ -92,7 +92,7 @@ def compare_last_orientation(g, gt):
 
     # since the quaternions are normalized, the inverse is the conjugate
     diff_quat = qmultiply_torch(g_torch[-1, :4], qbar_torch(gt_torch[:4]))
-    angle = 2.0 * torch.atan2(torch.linalg.norm(diff_quat[:3]), diff_quat[:, 3])
+    angle = 2.0 * torch.atan2(torch.linalg.norm(diff_quat[:3]), diff_quat[3])
 
     return 0.5 * torch.minimum(
         angle, torch.tensor(2.0 * np.pi) - angle

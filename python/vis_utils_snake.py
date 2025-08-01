@@ -14,6 +14,7 @@ def plot_animated_snake(
     pos, path_to_save,
     g=None, gt=None, gcp=None,
     broken_joint_ids=None, sphere_obstacle_params=None,
+    n_pos_per_curve=None,
     exponent=1.0, xy_lim=None, 
     show_orientation=False, show_snake_trail=False,
     show_g_trail=False, show_g_start=False,
@@ -46,6 +47,10 @@ def plot_animated_snake(
 
     if broken_joint_ids is None:
         broken_joint_ids = []
+
+    if n_pos_per_curve is None:
+        n_pos_per_curve = [pos.shape[1]]
+    slice_pos = np.cumsum([0] + n_pos_per_curve)
     
     if xy_lim is None:
         xy_lim = np.zeros(shape=(2, 2))
@@ -77,7 +82,10 @@ def plot_animated_snake(
     joints_size = 10.0 * linewidth_snake
     g_size = 6.0 * linewidth_snake
 
-    operational_pos_ids = [i for i in np.arange(1, pos.shape[1]-1) if (i-1) not in broken_joint_ids]
+    operational_pos_ids = []
+    n_tails = len(n_pos_per_curve)
+    for tail_id in range(n_tails):
+        operational_pos_ids += [i for i in np.arange(slice_pos[tail_id]+1, slice_pos[tail_id+1]-1) if (i-1-2*tail_id) not in broken_joint_ids]
     broken_pos_ids = [i+1 for i in broken_joint_ids]
 
     fig = plt.figure(figsize=(figure_width, figure_height))
@@ -86,13 +94,18 @@ def plot_animated_snake(
     for id_step in range(n_steps):
         
         if show_snake_trail:
-            line_collection = mcoll.LineCollection(pos[:id_step+1, :, :2], alpha=alphas[-id_step-1:], color=blue, linewidths=linewidth_snake, zorder=1)
-            ax_tmp.add_collection(line_collection)
+            for pos_id_start, pos_id_end in zip(slice_pos[:-1], slice_pos[1:]):
+                line_collection = mcoll.LineCollection(pos[:id_step+1, pos_id_start:pos_id_end, :2], alpha=alphas[-id_step-1:], color=blue, linewidths=linewidth_snake, zorder=1)
+                ax_tmp.add_collection(line_collection)
         else:
-            ax_tmp.plot(pos[id_step, :, 0], pos[id_step, :, 1], lw=linewidth_snake, c=blue, alpha=alphas[-1], zorder=1)
+            for pos_id_start, pos_id_end in zip(slice_pos[:-1], slice_pos[1:]):
+                ax_tmp.plot(pos[id_step, pos_id_start:pos_id_end, 0], pos[id_step, pos_id_start:pos_id_end, 1], lw=linewidth_snake, c=blue, alpha=alphas[-1], zorder=1)
 
         ax_tmp.scatter(pos[id_step, operational_pos_ids, 0], pos[id_step, operational_pos_ids, 1], marker='o', s=joints_size, c="k", zorder=1.5)
         ax_tmp.scatter(pos[id_step, broken_pos_ids, 0], pos[id_step, broken_pos_ids, 1], marker='o', s=joints_size, c="w", edgecolors="k", linewidths=2.0, zorder=1.5)
+
+        if n_tails > 1:
+            ax_tmp.scatter(pos[id_step, 0, 0], pos[id_step, 0, 1], marker='o', s=1.2*joints_size, c="k", zorder=1.5)
         
         if g is not None:
             if show_g_trail:
